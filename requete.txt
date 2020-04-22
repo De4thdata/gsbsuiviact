@@ -1,0 +1,49 @@
+SELECT type_remboursement.libelle, demande_remboursement.commentaire_frais, demande_remboursement.date_saisie, delegue_medical.nom
+FROM demande_remboursement
+JOIN visite ON id_visite = visite.id
+JOIN type_remboursement ON id_type_remboursement = type_remboursement.id
+JOIN medecin ON id_medecin = medecin.id
+JOIN delegue_medical ON id_delegue = delegue_medical.id
+WHERE delegue_medical.id = 1
+ORDER BY demande_remboursement.date_saisie DSC
+
+SELECT type_remboursement.libelle, demande_remboursement.commentaire_frais, demande_remboursement.date_saisie, delegue_medical.nom
+FROM demande_remboursement
+JOIN visite ON id_visite = visite.id
+JOIN type_remboursement ON id_type_remboursement = type_remboursement.id
+JOIN medecin ON id_medecin = medecin.id
+JOIN delegue_medical ON id_delegue = delegue_medical.id
+WHERE delegue_medical.id = 1
+AND demande_remboursement.date_saisie BETWEEN 'valeur1' AND 'valeur2'
+
+SELECT libelle
+FROM type_cadeau
+
+SELECT libelle
+FROM cadeau
+JOIN type_cadeau ON id_type_cadeau = type_cadeau.id
+JOIN delegue_medical ON id_delegue = delegue_medical.id
+JOIN medecin ON id_medecin = medecin.id
+WHERE delegue_medical.id = 1
+
+
+SELECT libelle, medecin.nom
+FROM cadeau
+JOIN type_cadeau ON id_type_cadeau = type_cadeau.id
+JOIN delegue_medical ON id_delegue = delegue_medical.id
+JOIN medecin ON id_medecin = medecin.id
+WHERE delegue_medical.id = 1
+and medecin.id = 1
+
+SELECT libelle
+FROM type_formation
+
+SELECT type_formation.id_type_formation, demande_formation.date_debut_demande, demande_formation.date_fin_demande
+FROM demande_formation
+JOIN type_formation ON demande_formation.id_type_formation = type_formation.id
+WHERE delegue_medical.id = 1
+
+SELECT type_formation.id_type_formation, demande_formation.date_debut_demande, demande_formation.date_fin_demande
+FROM demande_formation
+JOIN type_formation ON id_type_formation = type_formation.id
+WHERE type_formation.nom = 
