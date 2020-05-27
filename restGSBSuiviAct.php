@@ -152,16 +152,15 @@ class RestGSBSuiviAct extends Rest
 						{
 							// méthode GET   (consultation de données)
 							case "GET" :
-								if(isset($this->_donnees_req['identifiant']) == true && isset($this->_donnees_req['motdepasse'])== true){
-									$identifiant = $this->_donnees_req['identifiant'];
-									$mdp = $this->_donnees_req['motdepasse'];
-									$this->lire_liste_demande_remboursements_date($identifiant, $mdp);
+								if(isset($this->_donnees_req['delegue']) == true){
+									$delegue = $this->_donnees_req['delegue'];
+									$this->lire_liste_demande_remboursements_delegue($delegue);
 								}
 								// la variable $id existe-t'elle ? 
 								if (isset($id) == true) {
 									// OUI (cela signifie que l'on souhaite obtenir les caractéristiques d'un délégué
 									// on appelle la méthode lire_un_delegue en lui donnant le numéro du délégué à consulter
-									$this->lire_liste_demande_remboursements($id);
+									$this->lire_demande_remboursements($id);
 								} else {
 									// NON (cela signifie que l'on souhaite lire tous les délégués)
 									// on appelle la méthode lire_les_delegues 
@@ -422,7 +421,42 @@ class RestGSBSuiviAct extends Rest
     *  Le paramètre $id_vin contient l'identifiant du vin dont on souhaite obtenir les caractéristiques 
     *  Méthode GET
     */
-    private function lire_liste_demande_remboursements($id) 
+    private function lire_liste_demande_remboursements_delegue($delegue) 
+	{
+
+		if (empty($delegue) == false) {
+			// le paramètre contient une valeur
+			// on prépare et on exécute la requête permettant d'obtenir les caractéristiques du délégué médical
+				$req = $this->_obj_base->prepare("SELECT type_remboursement.libelle, demande_remboursement.commentaire_frais, demande_remboursement.date_saisie, delegue_medical.nom
+				FROM demande_remboursement
+				JOIN visite ON id_visite = visite.id
+				JOIN type_remboursement ON id_type_remboursement = type_remboursement.id
+				JOIN medecin ON id_medecin = medecin.id
+				JOIN delegue_medical ON id_delegue = delegue_medical.id
+				WHERE delegue_medical.id = :par_delegue
+				ORDER BY demande_remboursement.date_saisie DESC ");
+				$req->execute(array(':par_delegue' => $delegue,));
+	
+				if ($req->rowCount() > 0) {
+					$result = $req->fetchAll();
+					// Status OK + mise en forme des caractéristiques au format demandé (appel de la méthode convertirDonnees)
+					$this->reponse($this->convertir_donnees($result),200);
+				} else {
+					// Si aucun enregistrement, statut "No Content"
+					$this->reponse('Le compte n\'existe pas', 204);
+				}
+			} else {
+				// le paramètre transmis est vide: status Bad Request
+				$this->reponse('', 400);
+			}	
+	}
+
+	    /*
+    *  Retourne les informations sur un vin
+    *  Le paramètre $id_vin contient l'identifiant du vin dont on souhaite obtenir les caractéristiques 
+    *  Méthode GET
+    */
+    private function lire_demande_remboursements($id) 
 	{
         if (empty($id) == false) {
 			// le paramètre contient une valeur
